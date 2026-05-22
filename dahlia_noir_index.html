@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Dahlia Noir — Bouquinerie à Arlon</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --ink: #0f0d0b;
+    --cream: #f4f0e8;
+    --warm: #e8e0d0;
+    --dahlia: #1a1208;
+    --gold: #8b6914;
+    --muted: #5c5248;
+    --border: rgba(15,13,11,0.15);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'EB Garamond', serif;
+    font-size: 18px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.2rem 3rem;
+    background: rgba(244,240,232,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    font-weight: 300;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+
+  /* HERO — SPLIT TEXT */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding-top: 80px;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: var(--cream);
+    z-index: 0;
+  }
+
+  /* Texture overlay */
+  .hero-bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 50% 60%, rgba(15,13,11,0.06) 0%, transparent 70%);
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    text-align: center;
+  }
+
+  .split-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.08em;
+    overflow: hidden;
+    margin-bottom: 0;
+  }
+
+  .split-left, .split-right {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(5rem, 12vw, 11rem);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    color: var(--ink);
+    display: inline-block;
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
+    will-change: transform;
+  }
+
+  .split-left  { transform: translateX(0); }
+  .split-right { transform: translateX(0); }
+
+  .split-left.revealed  { transform: translateX(-110%); }
+  .split-right.revealed { transform: translateX(110%); }
+
+  /* The dahlia visual revealed behind the split */
+  .hero-reveal {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%; height: 100%;
+    opacity: 0;
+    transition: opacity 1.4s ease 0.4s;
+    pointer-events: none;
+    z-index: 1;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+  }
+
+  .hero-reveal.visible { opacity: 1; }
+
+  .reveal-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: 0.04em;
+  }
+  .reveal-sub {
+    font-family: 'EB Garamond', serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 1.5rem;
+  }
+
+  .hero-ornament {
+    width: 1px; height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    margin: 2rem auto 0;
+    opacity: 0;
+    transition: opacity 1s ease 1.2s;
+  }
+  .hero-ornament.visible { opacity: 1; }
+
+  .hero-tagline {
+    font-family: 'EB Garamond', serif;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 3rem;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.8s ease 1.8s, transform 0.8s ease 1.8s;
+  }
+  .hero-tagline.visible { opacity: 1; transform: translateY(0); }
+
+  .scroll-hint {
+    position: absolute; bottom: 2.5rem; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0.6;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:0.8} }
+
+  /* ZOOM PARALLAX SECTION */
+  .parallax-section {
+    height: 300vh;
+    position: relative;
+  }
+
+  .parallax-sticky {
+    position: sticky; top: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .parallax-frame {
+    position: relative;
+    width: 100%; height: 100%;
+  }
+
+  .parallax-img {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform-origin: center;
+    border: none;
+    overflow: hidden;
+  }
+
+  /* Parallax label */
+  .parallax-label {
+    position: sticky; top: 50%;
+    z-index: 10; pointer-events: none;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  /* ABOUT */
+  .section {
+    padding: 8rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-rule {
+    width: 40px; height: 1px;
+    background: var(--gold);
+    margin-bottom: 2.5rem;
+  }
+
+  .section-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.15;
+    margin-bottom: 2rem;
+    color: var(--ink);
+  }
+  .section-title em {
+    font-style: italic;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .section-body {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.85;
+  }
+
+  /* GRID CATEGORIES */
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    border: 0.5px solid var(--border);
+    margin-top: 4rem;
+  }
+
+  .cat-cell {
+    padding: 2.5rem;
+    border: 0.5px solid var(--border);
+    background: var(--cream);
+    transition: background 0.4s;
+    cursor: default;
+  }
+  .cat-cell:hover { background: var(--warm); }
+
+  .cat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--gold);
+    opacity: 0.4;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .cat-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--ink);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .cat-desc {
+    font-size: 0.88rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+  }
+
+  /* INFOS */
+  .infos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    padding: 8rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    border-top: 0.5px solid var(--border);
+  }
+
+  .info-block {}
+  .info-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+  }
+
+  .info-line {
+    display: flex; justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 0.95rem;
+  }
+  .info-key { color: var(--muted); }
+  .info-val { color: var(--ink); font-weight: 500; }
+
+  .address-block {
+    margin-top: 1rem;
+  }
+  .address-large {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 300;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .phone-link {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    border-bottom: 0.5px solid var(--gold);
+    padding-bottom: 2px;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 3rem;
+    border-top: 0.5px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .footer-copy {
+    font-size: 0.8rem;
+    color: var(--muted);
+    opacity: 0.6;
+  }
+
+  /* REVEAL animations for scroll */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .fade-up.in { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">Le Dahlia Noir</a>
+  <ul class="nav-links">
+    <li><a href="#about">La Librairie</a></li>
+    <li><a href="#collection">Rayons</a></li>
+    <li><a href="#infos">Infos</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+
+  <div class="hero-content">
+    <!-- The reveal layer behind -->
+    <div class="hero-reveal" id="heroReveal">
+      <span class="reveal-text">Bouquinerie</span>
+      <span class="reveal-sub">Arlon · Belgique · Depuis toujours</span>
+    </div>
+    <div class="hero-ornament" id="heroOrnament"></div>
+
+    <!-- Split text -->
+    <div class="split-container" id="splitContainer">
+      <span class="split-left" id="splitLeft">Le&nbsp;Dahlia</span>
+      <span class="split-right" id="splitRight">Noir</span>
+    </div>
+
+    <p class="hero-tagline" id="heroTagline">Bouquinerie · Rue des Faubourgs 20 · Arlon</p>
+  </div>
+
+  <span class="scroll-hint">Défiler ↓</span>
+</section>
+
+<!-- PARALLAX ZOOM SECTION -->
+<section class="parallax-section" id="parallaxSection">
+  <div class="parallax-sticky">
+    <div class="parallax-frame" id="parallaxFrame">
+
+      <!-- img 0 — center big -->
+      <div class="parallax-img" id="pimg0" style="
+        width:50vw; height:55vh;
+        margin-left:-25vw; margin-top:-27.5vh;">
+        <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1200&h=800&fit=crop&auto=format&q=80"
+             alt="Livres anciens sur des étagères" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+
+      <!-- img 1 — top left -->
+      <div class="parallax-img" id="pimg1" style="
+        width:30vw; height:28vh;
+        margin-left:-45vw; margin-top:-45vh;">
+        <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=600&fit=crop&auto=format&q=80"
+             alt="Bibliothèque avec livres" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+
+      <!-- img 2 — top right -->
+      <div class="parallax-img" id="pimg2" style="
+        width:22vw; height:40vh;
+        margin-left:18vw; margin-top:-42vh;">
+        <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600&h=800&fit=crop&auto=format&q=80"
+             alt="Livre ouvert" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+
+      <!-- img 3 — right -->
+      <div class="parallax-img" id="pimg3" style="
+        width:28vw; height:24vh;
+        margin-left:22vw; margin-top:8vh;">
+        <img src="https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=800&h=500&fit=crop&auto=format&q=80"
+             alt="Pages de livres" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+
+      <!-- img 4 — bottom left -->
+      <div class="parallax-img" id="pimg4" style="
+        width:24vw; height:26vh;
+        margin-left:-42vw; margin-top:12vh;">
+        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=700&h=500&fit=crop&auto=format&q=80"
+             alt="Pile de livres" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+
+      <!-- img 5 — bottom -->
+      <div class="parallax-img" id="pimg5" style="
+        width:30vw; height:24vh;
+        margin-left:-8vw; margin-top:30vh;">
+        <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=800&h=500&fit=crop&auto=format&q=80"
+             alt="Librairie intérieur" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+
+      <!-- img 6 — far right bottom -->
+      <div class="parallax-img" id="pimg6" style="
+        width:18vw; height:16vh;
+        margin-left:30vw; margin-top:30vh;">
+        <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600&h=400&fit=crop&auto=format&q=80"
+             alt="Écriture à la plume" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <div class="fade-up">
+    <p class="section-label">La Librairie</p>
+    <div class="section-rule"></div>
+    <h2 class="section-title">Un refuge pour les<br><em>âmes lettrées</em></h2>
+    <p class="section-body">
+      Au cœur d'Arlon, Le Dahlia Noir est bien plus qu'une librairie — c'est un cabinet de curiosités littéraires. Entre ses murs, le temps ralentit. Les livres s'accumulent avec grâce, les odeurs d'encre et de papier vieilli accueillent les visiteurs comme une promesse.
+    </p>
+    <p class="section-body" style="margin-top:1.2rem">
+      Livres d'occasion, introuvables, romans noirs, littérature étrangère, beaux livres… chaque ouvrage a sa place, chaque lecteur trouve la sienne.
+    </p>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section" id="collection" style="padding-top: 0;">
+  <div class="fade-up">
+    <p class="section-label">Rayons</p>
+    <div class="section-rule"></div>
+    <h2 class="section-title">Notre <em>collection</em></h2>
+  </div>
+  <div class="categories-grid fade-up">
+    <div class="cat-cell">
+      <span class="cat-num">01</span>
+      <span class="cat-name">Romans & Polar</span>
+      <span class="cat-desc">Du classique au contemporain, avec une passion pour le roman noir et le mystère.</span>
+    </div>
+    <div class="cat-cell">
+      <span class="cat-num">02</span>
+      <span class="cat-name">Beaux Livres</span>
+      <span class="cat-desc">Art, photographie, architecture — des ouvrages à contempler autant qu'à lire.</span>
+    </div>
+    <div class="cat-cell">
+      <span class="cat-num">03</span>
+      <span class="cat-name">Livres d'occasion</span>
+      <span class="cat-desc">Des trésors à découvrir, à prix doux. Chaque exemplaire a son histoire.</span>
+    </div>
+    <div class="cat-cell">
+      <span class="cat-num">04</span>
+      <span class="cat-name">Littérature étrangère</span>
+      <span class="cat-desc">Anglais, allemand, et bien d'autres — pour voyager sans quitter Arlon.</span>
+    </div>
+    <div class="cat-cell">
+      <span class="cat-num">05</span>
+      <span class="cat-name">Journaux & Papeterie</span>
+      <span class="cat-desc">Presse locale et nationale, carnets, stylos, et articles de papeterie fine.</span>
+    </div>
+    <div class="cat-cell">
+      <span class="cat-num">06</span>
+      <span class="cat-name">Livraisons</span>
+      <span class="cat-desc">Service de livraison disponible — commandez depuis chez vous.</span>
+    </div>
+  </div>
+</section>
+
+<!-- INFOS -->
+<div class="infos-grid" id="infos">
+  <div class="info-block fade-up">
+    <p class="info-heading">Horaires</p>
+    <div class="info-line"><span class="info-key">Lun–Ven</span><span class="info-val">10:00–12:00 · 14:00–18:00</span></div>
+    <div class="info-line"><span class="info-key">Samedi</span><span class="info-val">10:00–12:00 · 14:00–17:00</span></div>
+    <div class="info-line"><span class="info-key">Dimanche</span><span class="info-val">Fermé</span></div>
+    <div class="info-line" style="border:none">
+      <span style="font-size:0.8rem;color:var(--muted);margin-top:0.5rem">Accessible aux fauteuils roulants · Parking disponible</span>
+    </div>
+  </div>
+
+  <div class="info-block fade-up">
+    <p class="info-heading">Nous trouver</p>
+    <div class="address-block">
+      <p class="address-large">Rue des Faubourgs 20<br>6700 Arlon<br>Belgique</p>
+      <a href="tel:+3263446154" class="phone-link">063 44 61 54</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-logo">Le Dahlia Noir — Bouquinerie</span>
+  <span class="footer-copy">Arlon · Belgique</span>
+</footer>
+
+<script>
+const scales = [1, 4, 5, 6, 5, 6, 8, 9];
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function handleParallax() {
+  const section = document.getElementById('parallaxSection');
+  const rect = section.getBoundingClientRect();
+  const progress = Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight)));
+
+  const imgs = [
+    { el: document.getElementById('pimg0'), scaleMax: 4 },
+    { el: document.getElementById('pimg1'), scaleMax: 5 },
+    { el: document.getElementById('pimg2'), scaleMax: 6 },
+    { el: document.getElementById('pimg3'), scaleMax: 5 },
+    { el: document.getElementById('pimg4'), scaleMax: 6 },
+    { el: document.getElementById('pimg5'), scaleMax: 8 },
+    { el: document.getElementById('pimg6'), scaleMax: 9 },
+  ];
+
+  imgs.forEach(({ el, scaleMax }) => {
+    if (!el) return;
+    const s = lerp(1, scaleMax, progress);
+    el.style.transform = `translate(-50%, -50%) scale(${s})`;
+  });
+}
+
+// All parallax imgs start centered
+document.querySelectorAll('.parallax-img').forEach(el => {
+  el.style.transform = 'translate(-50%, -50%) scale(1)';
+  el.style.left = '50%';
+  el.style.top = '50%';
+  el.style.transition = 'none';
+});
+
+// Reapply offset from inline margin trick → convert to absolute positioning
+const offsets = [
+  { l: '50%', t: '50%', ml: '-25vw', mt: '-27.5vh' },
+  { l: '50%', t: '50%', ml: '-45vw', mt: '-45vh' },
+  { l: '50%', t: '50%', ml: '18vw',  mt: '-42vh' },
+  { l: '50%', t: '50%', ml: '22vw',  mt: '8vh' },
+  { l: '50%', t: '50%', ml: '-42vw', mt: '12vh' },
+  { l: '50%', t: '50%', ml: '-8vw',  mt: '30vh' },
+  { l: '50%', t: '50%', ml: '30vw',  mt: '30vh' },
+];
+
+[0,1,2,3,4,5,6].forEach(i => {
+  const el = document.getElementById('pimg'+i);
+  if (!el) return;
+  const o = offsets[i];
+  el.style.left = `calc(${o.l} + ${o.ml})`;
+  el.style.top  = `calc(${o.t} + ${o.mt})`;
+  el.style.marginLeft = '0';
+  el.style.marginTop  = '0';
+});
+
+// Split text hero trigger
+let splitDone = false;
+const splitLeft  = document.getElementById('splitLeft');
+const splitRight = document.getElementById('splitRight');
+const heroReveal = document.getElementById('heroReveal');
+const heroOrnament = document.getElementById('heroOrnament');
+const heroTagline  = document.getElementById('heroTagline');
+
+function checkSplit() {
+  if (splitDone) return;
+  const scrollY = window.scrollY;
+  if (scrollY > 80) {
+    splitDone = true;
+    splitLeft.classList.add('revealed');
+    splitRight.classList.add('revealed');
+    heroReveal.classList.add('visible');
+    heroOrnament.classList.add('visible');
+    heroTagline.classList.add('visible');
+  }
+}
+
+// Fade-up on scroll
+const fadeEls = document.querySelectorAll('.fade-up');
+function checkFades() {
+  fadeEls.forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.top < window.innerHeight * 0.85) el.classList.add('in');
+  });
+}
+
+window.addEventListener('scroll', () => {
+  handleParallax();
+  checkSplit();
+  checkFades();
+}, { passive: true });
+
+checkFades();
+</script>
+</body>
+</html>
